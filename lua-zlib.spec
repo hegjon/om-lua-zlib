@@ -1,9 +1,12 @@
 %global forgeurl https://github.com/brimworks/lua-zlib
 %global tag v%{version}
 
+%define lua_version %(lua -e 'print(_VERSION)' | cut -d ' ' -f 2)
+%define lua_libdir %{_libdir}/lua/%{lua_version}
+
 Name:      lua-zlib
 Version:   1.2
-Release:   1%{?dist}
+Release:   1
 Summary:   Simple streaming interface to zlib for Lua
 License:   MIT
 URL:       %{forgeurl}
@@ -11,8 +14,9 @@ URL:       %{forgeurl}
 %forgemeta
 Source:    %{forgesource}
 
+Requires: lua
+
 BuildRequires: lua-devel
-BuildRequires: gcc
 BuildRequires: make
 BuildRequires: zlib-devel
 
@@ -26,17 +30,14 @@ BuildRequires: zlib-devel
 
 
 %build
-%make_build linux \
-  LUAPATH=%{lua_pkgdir} \
-  LUACPATH=%{lua_libdir} \
-  INCDIR="-I%{_includedir}" \
-  CFLAGS="$CFLAGS -fPIC" \
-  LDFLAGS="$LDFLAGS -shared -fPIC"
+%{__cc} %{optflags} %{?__global_ldflags} -fPIC -c -o lua_zlib.o lua_zlib.c
+
+%{__cc} %{?__global_ldflags} -lz -lm -llua -shared -o zlib.so lua_zlib.o
+
 
 %install
 install -dD %{buildroot}%{lua_libdir}
-%make_install LUACPATH=%{buildroot}%{lua_libdir}
-
+install -p -m 755 zlib.so %{buildroot}%{lua_libdir}/
 
 %check
 lua test.lua
@@ -46,8 +47,3 @@ lua test.lua
 %license README
 %doc README
 %{lua_libdir}/zlib.so
-
-
-%changelog
-* Tue Nov 15 2022 Jonny Heggheim <hegjon@gmail.com> - 1.2-1
-- Initial package
