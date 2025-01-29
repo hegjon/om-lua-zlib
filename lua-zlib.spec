@@ -17,7 +17,6 @@ Source:    %{forgesource}
 Requires: lua
 
 BuildRequires: lua-devel
-BuildRequires: make
 BuildRequires: zlib-devel
 
 
