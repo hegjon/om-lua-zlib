@@ -8,6 +8,7 @@ Name:      lua-zlib
 Version:   1.2
 Release:   1
 Summary:   Simple streaming interface to zlib for Lua
+Group:     Development/Other
 License:   MIT
 URL:       %{forgeurl}
 
